@@ -63,7 +63,8 @@ class GCNClassifier(nn.Module):
 
         # 全局平均池化
         x = global_mean_pool(x, batch)
-        return F.log_softmax(self.classifier(x), dim=1)
+        x=self.classifier(x)
+        return x
 
 
 # 训练与评估
@@ -71,7 +72,7 @@ def trainEvaluate(model, trainLoader, valLoader, testLoader):
     # Adam优化
     optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
     # 损失函数
-    criterion = nn.NLLLoss()
+    criterion = nn.CrossEntropyLoss() 
 
     # 早停参数
     bestValLoss = float('inf')
