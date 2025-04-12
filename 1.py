@@ -46,7 +46,7 @@ subgraphList = generateSubgraphs(data, numSubgraphs=500, numHops=2)
 
 # 定义GCN模型
 class GCNClassifier(nn.Module):
-    def __init__(self, inputDim=dataset.num_node_features, hiddenDim=64, outputDim=dataset.num_classes):
+    def __init__(self, inputDim=dataset.num_node_features, hiddenDim=32, outputDim=dataset.num_classes):
         super().__init__()
         self.conv1 = GCNConv(inputDim, hiddenDim)
         self.conv2 = GCNConv(hiddenDim, hiddenDim)
@@ -95,9 +95,10 @@ def trainEvaluate(model, trainLoader, valLoader, testLoader):
         # 验证集监控
         model.eval()
         valLoss = 0
-        for batch in valLoader:
-            out = model(batch.x, batch.edge_index, batch.batch)
-            valLoss += criterion(out, batch.y).item()
+        with torch.no_grad():
+            for batch in valLoader:
+                out = model(batch.x, batch.edge_index, batch.batch)
+                valLoss += criterion(out, batch.y).item()
         valLoss /= len(valLoader)
 
         # 早停判断
@@ -114,9 +115,10 @@ def trainEvaluate(model, trainLoader, valLoader, testLoader):
 # 测试评估
     model.eval()
     correct = 0
-    for batch in testLoader:
-        pred = model(batch.x, batch.edge_index, batch.batch).argmax(dim=1)
-        correct += (pred == batch.y).sum().item()
+    with torch.no_grad():
+        for batch in testLoader:
+            pred = model(batch.x, batch.edge_index, batch.batch).argmax(dim=1)
+            correct += (pred == batch.y).sum().item()
     testAccuracy = correct / len(testLoader.dataset)
     return (trainTime, testAccuracy)
 
