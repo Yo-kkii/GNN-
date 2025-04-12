@@ -46,7 +46,7 @@ subgraphList = generateSubgraphs(data, numSubgraphs=500, numHops=2)
 
 # 定义GCN模型
 class GCNClassifier(nn.Module):
-    def __init__(self, inputDim=dataset.num_node_features, hiddenDim=32, outputDim=dataset.num_classes):
+    def __init__(self, inputDim=dataset.num_node_features, hiddenDim=64, outputDim=dataset.num_classes):
         super().__init__()
         self.conv1 = GCNConv(inputDim, hiddenDim)
         self.conv2 = GCNConv(hiddenDim, hiddenDim)
@@ -132,9 +132,9 @@ def main():
     )
 
     model = GCNClassifier()
-    trainLoader = DataLoader(trainData, batch_size=32, shuffle=True)
-    valLoader = DataLoader(valData, batch_size=32)
-    testLoader = DataLoader(testData, batch_size=32)
+    trainLoader = DataLoader(trainData, batch_size=64, shuffle=True)
+    valLoader = DataLoader(valData, batch_size=64)
+    testLoader = DataLoader(testData, batch_size=64)
 
     trainTime, testAccuracy = trainEvaluate(model, trainLoader, valLoader, testLoader)
 
